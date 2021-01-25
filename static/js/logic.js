@@ -74,8 +74,7 @@ d3.json(queryUrl, function(data) {
       }
       return mag * 4;
     }
-
-    
+ 
     L.geoJson(data, {
       // We turn each feature into a circleMarker on the map.
       pointToLayer: function(feature, latlng) {
