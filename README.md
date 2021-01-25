@@ -1,6 +1,6 @@
 # Leaflet  - Visualizing Data with Leaflet
 
-### [See Leaflet Challenge Results](https://klsisk.github.io/leaflet-challenge)
+### [See Leaflet Challenge Results](https://klsisk.github.io/leaflet-challenge/)
 
 ## Task
 
