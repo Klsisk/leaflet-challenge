@@ -1,7 +1,5 @@
 # Leaflet  - Visualizing Data with Leaflet
 
-### [See Leaflet Challenge Results](https://klsisk.github.io/leaflet-challenge/)
-
 ## Task
 
 ### Level 1: Basic Visualization
