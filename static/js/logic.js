@@ -43,27 +43,27 @@ d3.json(queryUrl, function(data) {
     return {
       opacity: 1,
       fillOpacity: 0.75,
-      fillColor: chooseColor(feature.property.mag),
+      fillColor: chooseColor(feature.geometry.coordinates[2]),
       color: "white",
-      radius: markerSize(feature.property.mag)
+      radius: markerSize(feature.properties.mag)
       };
     };
 
     // Function that will determine the color of magnitude based on magnitude number
     function chooseColor(mag) {
       switch (true) {
-        case mag > 5:
-          return "#ff0000";
-        case mag > 4:
-          return "#ff4000";
-        case mag > 3:
-          return "#ff8000";
-        case mag > 2:
-          return "#ffbf00";
-        case mag > 1:
-          return "#ffff00";
+        case mag > 90:
+          return "red";
+        case mag > 70:
+          return "orangered";
+        case mag > 50:
+          return "orange";
+        case mag > 30:
+          return "yellow";
+        case mag > 10:
+          return "chartreuse";
         default:
-          return "#bfff00";
+          return "lime";
       }
     }
 
@@ -75,36 +75,41 @@ d3.json(queryUrl, function(data) {
       return mag * 4;
     }
 
+    
     L.geoJson(data, {
-
-    // Called on each feature
-    onEachFeature: function(feature, layer) {
+      // We turn each feature into a circleMarker on the map.
+      pointToLayer: function(feature, latlng) {
+        return L.circleMarker(latlng);
+      },
+      // We set the style for each circleMarker using our styleInfo function.
+      style: mapStyle,
+      // Called on each feature
+      onEachFeature: function(feature, layer) {
+        // Giving each feature a pop-up with information pertinent to it
+        layer.bindPopup("<h2> Magnitude: " + feature.properties.mag + "</h2> <hr> <h3>Location: " + feature.properties.place + 
+        "</h3> <h3>Depth: " + feature.geometry.coordinates[2] + "</h3>");
+      }
+    }).addTo(myMap);
+  
+    // Set up the legend
+    var legend = L.control({ 
+      position: "bottomright" });
       
-      // Giving each feature a pop-up with information pertinent to it
-      layer.bindPopup("<h1> Magnitude: " + feature.properties.mag + "</h1> + <hr> <h2> Location: " + feature.properties.mag + "</h2>");
+      legend.onAdd = function() {
+        var div = L.DomUtil.create("div", "info legend");
+        var grades = [-10, 10, 30, 50, 70, 90];
+        var colors= ["lime", "chartreuse", "yellow", "orange", "orangered", "red"];
 
-    }
-  }).addTo(myMap);
+        // loop through our density intervals and generate a label with a colored square for each interval
+        for (var i = 0; i < grades.length; i++) {
+          div.innerHTML +=
+          '<i style="background:' + chooseColor(grades[i] + 1) + '"></i> ' +
+          grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+        }
+
+      return div;
+    };
+
+    legend.addTo(myMap); 
   
-  // Set up the legend
-  var legend = L.control({ 
-    position: "bottomright" });
-
-  legend.onAdd = function() {
-    var div = L.DomUtil.create("div", "info legend");
-    var magnitudeLevels = [0, 1, 2, 3, 4, 5];
-    var colors= ["#bfff00", "#ffff00", "#ffbf00", "#ff8000", "#ff4000", "#ff0000"];
-  
-  div.innerHTML = legendInfo;
-
-  limits.forEach(function(limit, index) {
-    labels.push("<li style=\"background-color: " + colors[index] + "\"></li>");
-  });
-
-  div.innerHTML += "<ul>" + labels.join("") + "</ul>";
-  return div;
-};
-
-// Adding legend to the map
-legend.addTo(myMap);
-});
+  })
